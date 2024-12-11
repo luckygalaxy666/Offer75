@@ -18,6 +18,10 @@
 * [13 在排序数组中查找数字](#13-在排序数组中查找数字)
 * [14 0~n-1的有序数组中缺失的数字](#14-0n-1的有序数组中缺失的数字)
 * [15 和为s的两个数字](#15-和为s的两个数字)
+* [16 和为s的连续正数序列](#16-和为s的连续正数序列)
+* [17 滑动窗口的最大值](#17-滑动窗口的最大值)
+* [18 扑克牌的顺子](#18-扑克牌的顺子)
+* [19 求1+2+...+n]](#19-求12n)
 
 <!-- vim-markdown-toc -->
 
@@ -653,3 +657,180 @@ class Solution {
 
 **时间复杂度 O(N)** 
 **空间复杂度 O(1)**
+
+## [16 和为s的连续正数序列](https://leetcode-cn.com/problems/he-wei-sde-lian-xu-zheng-shu-xu-lie-lcof/)
+
+**题目描述**
+
+输入一个正整数 target ，输出所有和为 target 的连续正整数序列（至少含有两个数）。
+
+序列内的数字由小到大排列，不同序列按照首个数字从小到大排列。
+
+示例 1：
+
+* 输入：target = 9
+
+* 输出：[[2,3,4],[4,5]]
+
+**解题思路**
+
+**滑动窗口**  当窗口内的和小于target时，右指针右移，当窗口内的和大于target时，左指针右移
+
+```Java
+class Solution {
+    public int[][] fileCombination(int target) {
+        int i = 1, j = 2 ,sum = 3;
+        List<int[]> ans = new  ArrayList<>();
+        while(i<j)
+        {
+            if(sum == target)
+            {
+                int[] tmp = new int[j-i+1];
+                for(int k = i;k<=j;k++)
+                    tmp[k-i] = k;
+                ans.add(tmp);
+            }
+            if(sum>=target)
+            {
+                sum -= i;
+                i++;
+            }
+            else
+            {
+                j++;
+                sum+=j;
+            }
+        }
+        return ans.toArray(new int[0][]);
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(1)**
+
+## [17 滑动窗口的最大值](https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/)
+
+**题目描述**
+
+给定一个数组 nums 和滑动窗口的大小 k，请找出所有滑动窗口里的最大值。
+
+示例 1：
+
+* 输入: nums = [1,3,-1,-3,5,3,6,7], 和 k = 3
+
+* 输出: [3,3,5,5,6,7]
+
+**解题思路**
+
+**单调队列**  维护一个单调递减的队列，队列的头部元素即为最大值
+
+可以使用双端队列实现单调队列，每次将新元素加入队列时，将队列尾部小于新元素的元素弹出，然后将新元素加入队列头部
+
+也可以用数组模拟双端队列，维护两个指针hh,tt分别指向队列的头部和尾部，hh指向的元素为最大值
+
+```Java
+class Solution {
+    public int[] maxAltitude(int[] heights, int limit) {
+        // int[] q = new int[heights.length];
+        // int len;
+        // int hh = 0,tt =-1;
+        // List<Integer> ans = new ArrayList<>();
+        // for(int i = 0;i<heights.length;i++)
+        // {
+        //     while(hh<=tt && i-limit+1 >q[hh]) hh++;
+        //     while(hh<=tt && heights[q[tt]]<heights[i]) tt--;
+        //     q[++tt] = i;
+        //     if(i>=limit-1) ans.add(heights[q[hh]]);
+        // }
+        Deque<Integer> q =new LinkedList<>();
+        List<Integer> ans = new ArrayList<>();
+        for(int i = 0;i<heights.length;i++)
+        {
+            while(!q.empty()&& i-limit+1 >q.peek()) q.pop();
+            while(!q.empty()>0&& heights[q.getLast()]<heights[i]) q.removeLast();
+            q.offer(i);
+            if(i>=limit-1) ans.add(heights[q.peek()]);
+        }
+        return ans.stream().mapToInt(Integer::intValue).toArray();
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(limit)**
+
+## [18 扑克牌的顺子](https://leetcode-cn.com/problems/bu-ke-pai-zhong-de-shun-zi-lcof/)
+
+**题目描述**
+
+从扑克牌中随机抽 5 张牌，判断是不是一个顺子，即这 5 张牌是不是连续的。1～12 为数字本身， 0为万能牌
+
+示例 1：
+
+* 输入: [1,2,3,4,5]
+
+* 输出: True
+
+**解题思路**
+
+**哈希表**  遇到0时``continue``，然后判断是否有重复的牌，最大牌和最小牌的差值是否小于5
+
+```Java
+class Solution {
+    public boolean checkDynasty(int[] places) {
+        HashSet<Integer> set = new HashSet();
+        int minv =13, maxv = 0;
+        for(int i =0;i<places.length;i++)
+        {
+            int u  = places[i];
+            if(u == 0) continue;
+            if(set.contains(u)) return false;
+            else
+            {
+                set.add(u);
+                minv = Math.min(u,minv);
+                maxv = Math.max(u,maxv);
+            }
+        }
+        if(maxv - minv <5) return true;
+        return false;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [19 求1+2+...+n](https://leetcode-cn.com/problems/qiu-12n-lcof/)]
+
+**题目描述**
+
+求 1+2+...+n ，要求不能使用乘除法、for、while、if、else、switch、case等关键字及条件判断语句（A?B:C）。
+
+示例 1：
+
+* 输入: n = 3
+
+* 输出: 6
+
+**解题思路**
+
+**递归 + 短路**  利用递归和短路的特性，当target=1时，递归终止
+
+```Java 
+class Solution {
+    
+    public int mechanicalAccumulator(int target) {
+        boolean x = target>1 && (target += mechanicalAccumulator(target-1))>0;
+        return target;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+
+
+
