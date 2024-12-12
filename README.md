@@ -21,9 +21,15 @@
 * [16 和为s的连续正数序列](#16-和为s的连续正数序列)
 * [17 滑动窗口的最大值](#17-滑动窗口的最大值)
 * [18 扑克牌的顺子](#18-扑克牌的顺子)
-* [19 求1+2+...+n]](#19-求12n)
+* [19 求1+2+...+n](#19-求12n)
+* [20 构建乘积数组](#20-构建乘积数组)
+* [21 替换空格](#21-替换空格)
+* [22 表示数值的字符串](#22-表示数值的字符串)
+* [23 字符串的排列](#23-字符串的排列)
+* [24 最长不含重复字符的子字符串](#24-最长不含重复字符的子字符串)
 
 <!-- vim-markdown-toc -->
+
 
 ## [1 剪绳子](https://leetcode.cn/problems/jian-sheng-zi-ii-lcof/description/)
 
@@ -802,7 +808,7 @@ class Solution {
 **时间复杂度 O(N)**
 **空间复杂度 O(N)**
 
-## [19 求1+2+...+n](https://leetcode-cn.com/problems/qiu-12n-lcof/)]
+## [19 求1+2+...+n](https://leetcode-cn.com/problems/qiu-12n-lcof/)
 
 **题目描述**
 
@@ -831,6 +837,260 @@ class Solution {
 **时间复杂度 O(N)**
 **空间复杂度 O(N)**
 
+## [20 构建乘积数组](https://leetcode.cn/problems/gou-jian-cheng-ji-shu-zu-lcof/description/)
 
+**题目描述**
+
+给定一个数组 A[0,1,…,n-1]，请构建一个数组 B[0,1,…,n-1]，其中 B[i] 的值是数组 A 中除了下标 i 以外的元素的积, 即 B[i] = A[0] * A[1] * ... * A[i-1] * A[i+1] * ... * A[n-1]。**不能使用除法**。
+
+示例 1：
+
+* 输入: [1,2,3,4,5]
+* 输出: [120,60,40,30,24]
+
+**解题思路**
+
+**前缀和** **后缀和**  分别计算前缀和后缀的乘积
+
+```Java
+class Solution {
+    public int[] statisticalResult(int[] arrayA) {
+        int len = arrayA.length;
+        int[] arrayB = new int[len];
+        if (len == 0) return arrayB;
+        arrayB[0] = 1;
+        for(int i = 1;i<len;i++)
+            arrayB[i] = arrayB[i-1] * arrayA[i-1];
+
+        int tmp = 1;
+        for(int i = len-1;i>=0;i--)
+        {
+            arrayB[i] *= tmp;
+            tmp*=arrayA[i];
+        }
+        return arrayB;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [21 替换空格](https://leetcode.cn/problems/ti-huan-kong-ge-lcof/)
+
+**题目描述**
+
+请实现一个函数，把字符串 s 中的`.`替换成` `空格。
+
+示例 1：
+
+* 输入: s = "We.are.happy."
+
+* 输出: "We are happy "
+
+**解题思路**
+
+Java中字符串String是不可变的，因此需要用StringBuilder来操作字符串
+
+**遍历**  遍历字符串，遇到`.`时替换成空格
+
+```Java
+class Solution {
+    public String pathEncryption(String path) {
+        char[] arr = path.toCharArray();
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == '.') {
+                arr[i] = ' ';
+            }
+        }
+        return new String(arr);
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [22 表示数值的字符串](https://leetcode.cn/problems/biao-shi-shu-zhi-de-zi-fu-chuan-lcof/description/)
+
+**题目描述**
+
+请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。
+
+示例 1：
+
+* 输入: s = "0.1"
+
+* 输出: true
+
+**解题思路**
+
+**正则表达式**  使用正则表达式判断字符串是否符合数值的规则
+
+```Java
+class Solution {
+    public boolean validNumber(String s) {
+        // 正则表达式用于匹配有效数字
+        if (s == null || s.trim() == null) return false;
+        String regex = "^\\s*[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?\\s*$";
+        return s.matches(regex);
+    }
+}
+```
+
+**时间复杂度 O(1)**
+**空间复杂度 O(1)**
+
+## [23 字符串的排列](https://leetcode-cn.com/problems/zi-fu-chuan-de-pai-lie-lcof/)
+
+**题目描述**
+
+输入一个字符串，打印出该字符串中字符的所有排列。
+
+示例 1：
+
+* 输入: s = "abc"
+
+* 输出: ["abc","acb","bac","bca","cab","cba"]
+
+**解题思路**
+
+**回溯**  递归枚举字符串的所有排列
+
+注意重复字符的剪枝： 先将字符串排序，然后在递归枚举时，如果当前字符和前一个字符相同，且前一个字符未使用，则跳过
+
+```Java
+class Solution {
+    Set<String> ans = new HashSet<>();
+    int len = 0;
+    boolean[] st; // 使用动态初始化避免固定长度限制
+    char[] goods;
+
+    public String[] goodsOrder(String goods) {
+        // 特殊情况处理
+        if (goods == null || goods.isEmpty()) return new String[0];
+
+        len = goods.length();
+        this.goods = goods.toCharArray();
+        Arrays.sort(this.goods);
+        st = new boolean[len]; // 初始化状态数组
+        
+        dfs(new StringBuilder(), 0);
+
+        // 将结果列表转换为数组返回
+        return ans.toArray(new String[0]);
+    }
+
+    public void dfs(StringBuilder str, int idx) {
+        if (idx == len) { // 当递归深度达到字符串长度时，记录结果
+            ans.add(str.toString());
+            return;
+        }
+        for (int i = 0; i < len; i++) {
+            if (st[i]||i!=0&&!st[i-1]&&goods[i] == goods[i-1]) continue; // 跳过已使用字符和重复字符
+
+            st[i] = true; // 标记字符为已使用
+            str.append(goods[i]);
+            dfs(str, idx + 1); // 传递 idx + 1，避免递增错误
+            str.deleteCharAt(idx);
+            st[i] = false; // 回溯重置
+        }
+    }
+}
+```
+
+**时间复杂度 O(N!)**
+**空间复杂度 O(N)**
+
+## [24 最长不含重复字符的子字符串](https://leetcode.cn/problems/zui-chang-bu-han-zhong-fu-zi-fu-de-zi-zi-fu-chuan-lcof/description/)
+
+**题目描述**
+
+请从字符串中找出一个最长的不包含重复字符的子字符串，计算该最长子字符串的长度。
+
+示例 1：
+
+* 输入: s = "abcabcbb"
+
+* 输出: 3
+
+**解题思路**
+
+**滑动窗口**  使用`deque`维护一个滑动窗口，窗口内的字符不重复
+
+```Java
+class Solution {
+    Deque<Character> q = new LinkedList<Character>();
+
+    public int dismantlingAction(String arr) {
+        char[] str  = arr.toCharArray();
+        int len = str.length;
+        int res = 0;
+        for(int i = 0 ;i<len;i++)
+        {
+            while(q.size()!=0&& q.contains(str[i])) q.pop();
+            q.offerLast(str[i]);
+            // System.out.println(q);
+            res = Math.max(res,q.size());
+
+        }
+        return res;
+        
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+**滑动窗口 + 哈希表**  使用哈希表记录字符上一次出现的位置，然后使用滑动窗口计算最长不重复子串
+
+```Java
+class Solution {
+    public int dismantlingAction(String arr) {
+        Map<Character, Integer> map = new HashMap<>();
+        char[] arrs = arr.toCharArray();
+        int start = -1;
+        int res = 0;
+        for(int i = 0; i < arrs.length; i++){
+            if(map.containsKey(arrs[i])){
+                start = Math.max(start, map.get(arrs[i]));
+            }
+            res = Math.max(res, i - start);
+            map.put(arrs[i], i);
+        }
+        return res;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(1)**
+
+**动态规划 + 哈希表**  使用哈希表记录字符上一次出现的位置，然后使用动态规划计算最长不重复子串
+    
+getOrDefault() 方法的作用是：获取指定 key 对应对 value，如果找不到 key，返回默认值。
+
+```Java
+![](https://cdn.jsdelivr.net/gh/luckygalaxy666/img_bed@main/img/202412122245353.png)
+
+```Java 
+class Solution {
+    public int dismantlingAction(String arr) {
+        Map<Character, Integer> dic = new HashMap<>();
+        int res = 0, tmp = 0, len = arr.length();
+        for(int j = 0; j < len; j++) {
+            int i = dic.getOrDefault(arr.charAt(j), -1); // 获取索引 i
+            dic.put(arr.charAt(j), j); // 更新哈希表
+            tmp = tmp < j - i ? tmp + 1 : j - i; // dp[j - 1] -> dp[j]
+            res = Math.max(res, tmp); // max(dp[j - 1], dp[j])
+        }
+        return res;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(1)**
 
 
