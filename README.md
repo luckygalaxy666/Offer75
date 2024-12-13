@@ -1093,4 +1093,346 @@ class Solution {
 **时间复杂度 O(N)**
 **空间复杂度 O(1)**
 
+## [25 第一个只出现一次的字符](https://leetcode.cn/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/)
+
+**题目描述**
+
+在字符串 s 中找出第一个只出现一次的字符。如果没有，返回一个单空格。
+
+示例 1：
+
+* 输入: s = "abaccdeff"
+
+* 输出: "b"
+
+**解题思路**
+
+**哈希表**  使用哈希表记录字符出现的次数，然后遍历字符串找到第一个只出现一次的字符
+
+```Java
+class Solution {
+    public char dismantlingAction(String arr) {
+        LinkedHashMap<Character,Integer> map = new LinkedHashMap<>();
+
+        char[] str = arr.toCharArray();
+
+        for(int i = 0 ;i<str.length;i++)
+        {
+            map.put(str[i],map.getOrDefault(str[i],0)+1);
+        }
+        
+        for(char key: map.keySet())
+        {
+            if(map.get(key) == 1) 
+            {
+                return key;
+            }
+        }
+        return ' ';
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [26 反转单词顺序](https://leetcode-cn.com/problems/fan-zhuan-dan-ci-shun-xu-lcof/)]
+
+**题目描述**
+
+输入一个英文句子，翻转句子中单词的顺序，但单词内字符的顺序不变。为简单起见，标点符号和普通字母一样处理。例如输入字符串"I am a student. "，则输出"student. a am I"。
+
+示例 1：
+
+* 输入: s = "the sky is blue"
+
+* 输出: "blue is sky the"
+
+**解题思路**
+
+**字符串处理**  使用`split`函数分割字符串，然后逆序拼接
+
+```Java
+class Solution {
+    public String reverseMessage(String message) {
+        String[] words = message.trim().split(" "); 
+        StringBuilder sb = new StringBuilder();
+        
+        for(int i = words.length -1 ;i >= 0;i--)
+        {
+            if(words[i].equals("")) continue;
+            sb.append(words[i]);
+            if(i!=0) sb.append(" ");
+        }
+        return sb.toString();
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [27 左旋转字符串](https://leetcode-cn.com/problems/zuo-xuan-zhuan-zi-fu-chuan-lcof/)
+
+**题目描述**
+
+字符串的左旋转操作是把字符串前面的若干个字符转移到字符串的尾部。请定义一个函数实现字符串左旋转操作的功能。比如，输入字符串"abcdefg"和数字2，该函数将返回左旋转两位得到的结果"cdefgab"。
+
+示例 1：
+
+* 输入: s = "abcdefg", k = 2
+
+* 输出: "cdefgab"
+
+**解题思路**
+
+**字符串处理**  使用`substring`函数截取字符串，然后拼接
+
+```Java
+class Solution {
+    public String leftRotate(String message, int k) {
+        int len = message.length();
+        if(len == 0) return "";
+        k = k % len;
+        return message.substring(k) + message.substring(0,k);
+    }
+}
+```
+
+**若不允许使用split和StringBuilder**
+
+```Java
+class Solution {
+    public String dynamicPassword(String password, int target) {
+        String ans = "";
+        int len = password.length();
+        for(int i = target;i<len+target;i++)
+            ans += password.charAt(i%len);
+        
+        return ans;
+        
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**  
+
+缺点：每次拼接字符串都会在堆内存创建一个新的字符串对象，效率较低
+
+
+## [28 把字符串转换成整数](https://leetcode.cn/problems/ba-zi-fu-chuan-zhuan-huan-cheng-zheng-shu-lcof/)
+
+**题目描述**
+
+请你写一个函数 StrToInt，实现把字符串转换成整数这个功能。当然，不能使用 atoi 或者其他类似的库函数。
+
+示例 1：
+
+* 输入: "42"
+
+* 输出: 42
+
+**解题思路**
+
+**字符串处理**  逐个字符处理，注意正负号和溢出情况
+
+```Java
+class Solution {
+    public int myAtoi(String str) {
+        char[] arr = str.trim().toCharArray();
+        if(arr.length == 0) return 0;
+        int res = 0, bny = Integer.MAX_VALUE/10;
+        int sign = 1;
+
+        if(arr[0] == '+') sign = 1;
+        else if (arr[0] == '-') sign = -1;
+        else if(arr[0]<'0'||arr[0]>'9') return 0;
+        else res += arr[0]-'0';
+        for(int i = 1 ;i<arr.length;i++)
+        {
+            if(arr[i]<'0'||arr[i]>'9') break;
+            if(res>bny||res==bny&&arr[i]>'7') return sign == 1?Integer.MAX_VALUE:Integer.MIN_VALUE;
+            res = res *10 + arr[i]-'0';
+        }
+        return res*sign;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(1)**
+
+## [29 从尾到头打印链表](https://leetcode.cn/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/description/)
+
+**题目描述**
+
+输入一个链表的头节点，从尾到头反过来返回每个节点的值（用数组返回）。
+
+示例 1：
+
+* 输入: head = [1,3,2]
+
+* 输出: [2,3,1]
+
+**解题思路**
+
+**递归**  递归遍历链表，然后逆序添加到数组
+
+```Java
+class Solution {
+    List<Integer> ans = new ArrayList<>();
+    public void dfs(ListNode head)
+    {
+        if(head == null) return ;
+        dfs(head.next);
+        ans.add(head.val);
+    }
+    public int[] reverseBookList(ListNode head) {
+        dfs(head);
+       
+        return ans.stream().mapToInt(Integer::intValue).toArray();
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+
+**栈**  使用栈存储链表的值，然后逆序添加到数组
+
+```Java
+class Solution {
+    Stack<ListNode> stk = new Stack<>();
+    public int[] reverseBookList(ListNode head) {
+        while(head!=null)
+        {
+            stk.push(head);
+            head = head.next;
+        }
+        int[] res = new int[stk.size()];
+        for(int i=0;!stk.isEmpty();i++){
+            res[i]=stk.pop().val;
+        }
+        return res;
+        
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [30 删除链表的节点](https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/)
+
+**题目描述**
+
+给定单向链表的头指针和一个要删除的节点的值，定义一个函数删除该节点。
+
+返回删除后的链表的头节点。
+
+示例 1：
+
+* 输入: head = [4,5,1,9], val = 5
+
+* 输出: [4,1,9]
+
+**解题思路**
+
+**模拟**  遍历链表，找到要删除的节点，然后删除
+
+```Java
+class Solution {
+    public ListNode deleteNode(ListNode head, int val) {
+        if(head.val == val) return head.next;
+        ListNode prev = head,sec = head.next;
+        while(sec!=null)
+        {
+            if(sec.val == val)
+            {
+                prev.next = sec.next;
+                break;
+            }
+            prev = sec;
+            sec = sec.next;
+
+        }
+        return head;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(1)**
+
+## [31 链表中倒数第k个节点](https://leetcode.cn/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/description/)
+
+**题目描述**
+
+输入一个链表，输出该链表中倒数第k个节点。为了符合大多数人的习惯，本题从1开始计数，即链表的尾节点是倒数第1个节点。例如，一个链表有6个节点，从头节点开始，它们的值依次是1、2、3、4、5、6。这个链表的倒数第3个节点是值为4的节点。
+
+示例 1：
+
+* 输入: head = [1,2,3,4,5], k = 2
+
+* 输出: 4
+
+**解题思路**
+
+**双指针**  使用双指针，一个指针先走k步，然后两个指针同时走，当第一个指针走到尾部时，第二个指针即为倒数第k个节点
+
+```Java
+class Solution {
+    public ListNode trainingPlan(ListNode head, int cnt) {
+        ListNode former = head, latter =head;
+        for(int i = 0;i<cnt;i++)
+        {
+            former = former.next;
+        }
+        while(former!=null)
+        {
+            former = former.next;
+            latter = latter.next;
+        }
+        return latter;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(1)**
+
+## [32 反转链表](https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/)
+
+**题目描述**
+
+定义一个函数，输入一个链表的头节点，反转该链表并输出反转后链表的头节点。
+
+示例 1：
+
+* 输入: head = [1,2,3,4,5]
+
+* 输出: [5,4,3,2,1]
+
+**解题思路**
+
+**迭代**  使用三个指针，分别指向前一个节点，当前节点和下一个节点，然后逐个反转
+
+```Java
+class Solution {
+    Stack<ListNode> stk = new Stack<>();
+    public ListNode trainningPlan(ListNode head) {
+        ListNode cur = head, prev =null;
+        while(cur!=null)
+        {
+            ListNode tmp = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = tmp;
+        }
+        return prev;
+    }
+}
+```
 
