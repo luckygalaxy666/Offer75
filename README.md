@@ -35,6 +35,13 @@
 * [30 删除链表的节点](#30-删除链表的节点)
 * [31 链表中倒数第k个节点](#31-链表中倒数第k个节点)
 * [32 反转链表](#32-反转链表)
+* [33 合并两个排序的链表](#33-合并两个排序的链表)
+* [34 复杂链表的复制](#34-复杂链表的复制)
+* [35 两个链表的第一个公共节点](#35-两个链表的第一个公共节点)
+* [36 两个栈实现队列](#36-两个栈实现队列)
+* [37 包含min函数的栈](#37-包含min函数的栈)
+* [38 栈的压入、弹出序列](#38-栈的压入弹出序列)
+* [39 队列的最大值](#39-队列的最大值)
 
 <!-- vim-markdown-toc -->
 
@@ -1442,4 +1449,354 @@ class Solution {
     }
 }
 ```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(1)**
+
+## [33 合并两个排序的链表](https://leetcode-cn.com/problems/he-bing-liang-ge-pai-xu-de-lian-biao-lcof/)
+
+**题目描述**
+
+输入两个递增排序的链表，合并这两个链表并使新链表中的节点仍然是按照递增排序的。
+
+示例 1：
+
+* 输入: 1->2->4, 1->3->4
+
+* 输出: 1->1->2->3->4->4
+
+**解题思路**
+
+**双指针** 使用双指针，分别指向两个链表的头节点，然后逐个比较节点的大小，将小的节点加入新链表
+
+**归并排序的逻辑**
+
+```Java
+class Solution {
+    public ListNode trainningPlan(ListNode l1, ListNode l2) {
+        ListNode head = new ListNode(0);
+        ListNode cur = head;
+        while(l1!=null && l2!=null)
+        {
+            if(l1.val<l2.val)
+            {
+                cur.next = l1;
+                l1 = l1.next;
+            }
+            else
+            {
+                cur.next = l2;
+                l2 = l2.next;
+            }
+            cur = cur.next;
+        }
+        cur.next = l1!=null?l1: l2;
+
+        return head.next;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(1)**
+
+## [34 复杂链表的复制](https://leetcode.cn/problems/fu-za-lian-biao-de-fu-zhi-lcof/description/)
+
+**题目描述**
+
+请实现 copyRandomList 函数，复制一个复杂链表。在复杂链表中，每个节点除了有一个 next 指针指向下一个节点，还有一个 random 指针指向链表中的任意节点或者 null。
+
+示例 1：
+
+* 输入: head = [[7,null],[13,0],[11,4],[10,2],[1,0]]
+
+* 输出: [[7,null],[13,0],[11,4],[10,2],[1,0]]
+
+**解题思路**
+
+**哈希表**  使用哈希表记录原链表节点和新链表节点的对应关系，然后遍历链表，复制节点
+
+```Java
+class Solution {
+    public Node copyRandomList(Node head) {
+        HashMap<Node,Node> map = new HashMap<>();
+        Node tmp = head;
+        while(tmp!=null)
+        {
+            map.put(tmp,new Node(tmp.val));
+            tmp = tmp.next;
+        }
+        Node cur = head;
+        while(cur!=null)
+        {
+            map.get(cur).next = map.get(cur.next);
+            map.get(cur).random = map.get(cur.random);
+            cur = cur.next;
+        }
+        return map.get(head);
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+**拼接**  将新节点插入到原节点的后面，然后复制random指针，最后拆分链表
+
+```Java
+class Solution {
+    publi0c Node copyRandomList(Node head) {
+        if (head == null) return null;
+        Node cur = head;
+        // 1. 复制各节点，构建拼接链表
+        while(cur!=null)
+        {
+            Node tmp = new Node(cur.val);
+            tmp.next =cur.next;
+            cur.next = tmp;
+            cur = tmp.next;
+        }
+        // 2. 构建各新节点的random指向
+        cur = head;
+        while(cur!=null)
+        {
+            if(cur.random != null)
+            {
+                cur.next.random = cur.random.next;
+            }
+            cur = cur.next.next;
+        }
+        // 3. 拆分两链表
+        cur = head.next;
+        Node pre = head,res = head.next;
+        while(cur.next !=null)
+        { 
+            // 先处理前指针 再处理后指针 否则会出错
+            pre.next = pre.next.next;
+            cur.next = cur.next.next;
+            pre = pre.next;
+            cur = cur.next;
+        }
+        pre.next = null;
+        return res;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [35 两个链表的第一个公共节点](https://leetcode.cn/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/description/)
+
+**题目描述**
+
+输入两个链表，找出它们的第一个公共节点。
+
+示例 1：
+
+* 输入: intersectVal = 8, listA = [4,1,8,4,5], listB = [5,0,1,8,4,5], skipA = 2, skipB = 3
+
+* 输出: Reference of the node with value = 8
+
+**解题思路**
+
+**双指针**  使用双指针，分别指向两个链表的头节点，因为两个链表长度可能不同，所以当一个指针走到尾部时，将其指向另一个链表的头节点，然后继续遍历，直到两个指针相遇
+
+```Java
+class Solution {
+    ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        ListNode A = headA, B= headB;
+        while(A!=B)
+        {
+            A = A!=null?A.next:headB;
+            B = B!=null?B.next:headA; 
+        }
+        return A;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(1)**
+
+## [36 两个栈实现队列](https://leetcode.cn/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/description/)
+
+**题目描述**
+
+用两个栈实现一个队列。队列的声明如下，请实现它的两个函数 appendTail 和 deleteHead ，分别完成在队列尾部插入整数和在队列头部删除整数的功能。
+
+示例 1：
+
+* 输入: ["CQueue","appendTail","deleteHead","deleteHead"], [[],[3],[],[]]
+
+* 输出: [null,null,3,-1]
+
+**解题思路**
+
+**栈**  使用两个栈，一个栈用于插入元素，一个栈用于删除元素
+
+```Java
+class CQueue {
+    Stack<Integer> stk1,stk2;
+    public CQueue() {
+        stk1 = new Stack<>();
+        stk2 = new Stack<>();
+    }
+    
+    public void appendTail(int value) {
+        stk1.push(value);
+    }
+    
+    public int deleteHead() {
+        if(stk2.isEmpty())
+        {
+            while(!stk1.isEmpty())
+            {
+                stk2.push(stk1.pop());
+            }
+        }
+        if(stk2.isEmpty()) return -1;
+        return stk2.pop();
+    }
+}
+```
+
+**时间复杂度 O(1)**
+**空间复杂度 O(N)**
+
+## [37 包含min函数的栈](https://leetcode-cn.com/problems/bao-han-minhan-shu-de-zhan-lcof/description/)
+
+**题目描述**
+
+定义栈的数据结构，请在该类型中实现一个能够得到栈的最小元素的 min 函数在该栈中，调用 min、push 及 pop 的时间复杂度都是 O(1)。
+
+示例 1：
+
+* 输入: ["MinStack","push","push","push","min","pop","min"] ,[[],[-2],[0],[-3],[],[],[]]
+* 输出: [null,null,null,null,-3,null,-2]
+
+**解题思路**
+
+**辅助栈**  使用两个栈，一个栈用于存储数据，一个栈用于存储最小值
+
+```Java
+class MinStack {
+    Stack<Integer> A,B;
+    /** initialize your data structure here. */
+    public MinStack() {
+        A = new Stack<>();
+        B = new Stack<>();
+    }
+    
+    public void push(int x) {
+        A.push(x);
+        if(B.empty()||B.peek()>=x)
+            B.push(x);
+    }
+    
+    public void pop() {
+        if(A.pop().equals(B.peek()))
+            B.pop();
+    }
+    
+    public int top() {
+        return A.peek();
+    }
+    
+    public int getMin() {
+        return B.peek();
+        
+    }
+}
+```
+
+**时间复杂度 O(1)**
+**空间复杂度 O(N)**
+
+## [38 栈的压入、弹出序列](https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/description/)
+**题目描述**
+
+给定两个整数数组 pushed 和 popped ，每个数组中的 **不同** 整数都 **互不相同** ，请你判断从 pushed 中所构建的栈是否是 popped 的排列。
+
+示例 1：
+
+* 输入: pushed = [1,2,3,4,5], popped = [4,5,3,2,1]
+
+* 输出: true
+
+**解题思路**
+
+**模拟**  使用一个辅助栈模拟入栈和出栈的过程，当栈顶元素等于出栈序列时，出栈
+
+```Java
+class Solution {
+    public boolean validateStackSequences(int[] pushed, int[] popped) {
+        Stack<Integer> stk = new Stack<>();
+        int j = 0;
+        for(int i = 0;i<pushed.length;i++)
+        {
+            stk.push(pushed[i]);
+            while(!stk.isEmpty()&&stk.peek() == popped[j])
+            {
+                stk.pop();
+                j++;
+            }
+        }
+        return stk.isEmpty();
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [39 队列的最大值](https://leetcode.cn/problems/dui-lie-de-zui-da-zhi-lcof/description/)
+
+**题目描述**
+
+请定义一个队列并实现函数 max_value 得到队列里的最大值，要求函数max_value、push_back 和 pop_front 的均摊时间复杂度都是O(1)。
+
+若队列为空，pop_front 和 max_value 需要返回 -1
+
+示例 1：
+
+* 输入: ["MaxQueue","push_back","push_back","max_value","pop_front","max_value"], [[],[1],[2],[],[],[]]
+
+* 输出: [null,null,null,2,1,2]
+
+**解题思路**
+
+**双端队列**  使用双端队列维护一个单调递减的队列，队列头部存储最大值
+
+```Java
+class Checkout {
+    Deque<Integer> A,B;
+    public Checkout() {
+        A = new LinkedList<>();
+        B = new LinkedList<>();
+    }
+    
+    public int get_max() {
+        return B.isEmpty()?-1:B.peek();
+    }
+    
+    public void add(int value) {
+        A.offerLast(value);
+        while(!B.isEmpty()&&B.peekLast()<value) B.pollLast();
+        B.offerLast(value);
+    }
+    
+    public int remove() {
+        if(A.isEmpty()) return -1;
+        if(A.peekFirst().equals(B.peekFirst()))
+            B.pollFirst();
+        return A.pollFirst();
+            
+    }
+}
+```
+
+**时间复杂度 O(1)**
+**空间复杂度 O(N)**
+
 
