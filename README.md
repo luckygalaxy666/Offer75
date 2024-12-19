@@ -42,6 +42,15 @@
 * [37 包含min函数的栈](#37-包含min函数的栈)
 * [38 栈的压入、弹出序列](#38-栈的压入弹出序列)
 * [39 队列的最大值](#39-队列的最大值)
+* [40 重建二叉树](#40-重建二叉树)
+* [41 树的子结构](#41-树的子结构)
+* [42 二叉树的镜像](#42-二叉树的镜像)
+* [43 对称的二叉树](#43-对称的二叉树)
+* [44 Ⅰ.从上到下打印二叉树](#44-从上到下打印二叉树)
+* [45 Ⅱ.从上到下打印二叉树 II](#45-从上到下打印二叉树-ii)
+* [46 从上到下打印二叉树 III](#46-从上到下打印二叉树-iii)
+* [47 二叉搜索树的后续遍历序列](#47-二叉搜索树的后续遍历序列)
+* [48 二叉树中和为某一值的路径](#48-二叉树中和为某一值的路径)
 
 <!-- vim-markdown-toc -->
 
@@ -1799,4 +1808,373 @@ class Checkout {
 **时间复杂度 O(1)**
 **空间复杂度 O(N)**
 
+## [40 重建二叉树](https://leetcode.cn/problems/zhong-jian-er-cha-shu-lcof/)
+**题目描述**
+
+输入某二叉树的前序遍历和中序遍历的结果，请重建出该二叉树。
+
+假设输入的前序遍历和中序遍历的结果中都不含重复的数字。
+
+示例 1：
+
+* 输入: 前序遍历 preorder = [3,9,20,15,7], 中序遍历 inorder = [9,3,15,20,7]
+
+* 输出: [3,9,20,null,null,15,7]
+
+**解题思路**
+
+**递归**  递归重建二叉树，根据前序遍历的第一个节点找到根节点，然后根据中序遍历的根节点位置分割左右子树,递归重建左右子树
+    
+```Java
+class Solution {
+    int[] preorder;
+    HashMap<Integer,Integer> hashmap = new HashMap<>();
+    public TreeNode deduceTree(int[] preorder, int[] inorder) {
+        this.preorder = preorder;
+        for(int i = 0;i<inorder.length;i++)
+        {
+            hashmap.put(inorder[i],i);
+        }
+        return dfs(0,0,inorder.length-1);
+    }
+
+    public TreeNode dfs(int pre_root,int in_left,int in_right)
+    {
+        if(in_left>in_right) return null;
+        int in_root = hashmap.get(preorder[pre_root]);
+        TreeNode root = new TreeNode(preorder[pre_root]);
+        root.left = dfs(pre_root+1,in_left,in_root-1);
+        root.right = dfs(pre_root + in_root- in_left+1,in_root + 1,in_right);
+        return root;
+    }
+}
+```
+
+## [41 树的子结构](https://leetcode.cn/problems/shu-de-zi-jie-gou-lcof/description/)
+
+**题目描述**
+
+输入两棵二叉树A和B，判断B是不是A的子结构。
+
+示例 1：
+
+* 输入: A = [3,4,5,1,2], B = [4,1]
+
+* 输出: true
+
+**解题思路**
+
+**递归**  递归判断A的子树是否和B相同，然后递归判断A的左右子树是否和B的左右子树相同
+
+```Java
+class Solution {
+    public boolean isSubStructure(TreeNode A, TreeNode B) {
+        return(A!=null&&B!=null)&&(isContain(A,B)||isSubStructure(A.left,B)||isSubStructure(A.right,B));
+    }
+    public boolean isContain(TreeNode A,TreeNode B)
+    {
+        if(B == null) return true;
+        if(A == null|| A.val != B.val) return false;
+        return isContain(A.left,B.left) && isContain(A.right,B.right);
+    }
+}
+```
+
+## [42 二叉树的镜像](https://leetcode-cn.com/problems/er-cha-shu-de-jing-xiang-lcof/description/) 
+
+**题目描述**
+
+请完成一个函数，输入一个二叉树，该函数输出它的镜像。
+
+示例 1：
+
+* 输入: [4,2,7,1,3,6,9]
+
+* 输出: [4,7,2,9,6,3,1]
+
+**解题思路**
+
+**递归**  递归交换左右子树
+
+```Java
+class Solution {
+    public TreeNode flipTree(TreeNode root) { 
+        if(root== null) return null;
+        root.left = flipTree(root.left);
+        root.right = flipTree(root.right);
+        TreeNode tmp = root.left;
+        root.left  = root.right;
+        root.right = tmp;
+        return root; 
+    }
+}
+```
+
+## [43 对称的二叉树](https://leetcode-cn.com/problems/dui-cheng-de-er-cha-shu-lcof/description/)
+
+**题目描述**
+
+请实现一个函数，用来判断一棵二叉树是不是对称的。
+
+如果一棵二叉树和它的镜像一样，那么它是对称的。
+
+示例 1：
+
+* 输入: [1,2,2,3,4,4,3]
+
+* 输出: true
+
+**解题思路**
+
+**递归**  
+
+判断左右子树的根节点是否相同，然后递归判断左子树的左节点和右子树的右节点，左子树的右节点和右子树的左节点是否相同
+
+```Java
+class Solution {
+    public boolean checkSymmetricTree(TreeNode root) {
+        return dfs(root,root);
+    }
+    public boolean dfs(TreeNode r_left,TreeNode r_right)
+    {   if(r_left == null && r_right == null) return true;
+        if(r_left==null || r_right == null) return false;
+        if(r_left.val != r_right.val) return false;
+        return dfs(r_left.left,r_right.right) && dfs(r_left.right,r_right.left);
+            
+    }
+}
+```
+
+## [44 Ⅰ.从上到下打印二叉树](https://leetcode.cn/problems/cong-shang-dao-xia-da-yin-er-cha-shu-lcof/description/)
+**题目描述**
+
+从上到下打印出二叉树的每个节点，同一层的节点按照从左到右的顺序打印。
+
+示例 1：
+
+* 输入: [3,9,20,null,null,15,7]
+
+* 输出: [3,9,20,15,7]
+
+**解题思路**
+
+**BFS**  使用队列进行层次遍历
+
+```Java
+class Solution {
+    List<Integer> res = new ArrayList<>();
+
+    public int[] decorateRecord(TreeNode root) {
+        if (root == null) return new int[0]; // 返回空数组
+
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        while (!q.isEmpty()) {
+            TreeNode u = q.poll();
+            res.add(u.val);
+            if (u.left != null) q.add(u.left);
+            if (u.right != null) q.add(u.right);
+        }
+
+        // 将 List<Integer> 转换为 int[]
+        return res.stream().mapToInt(Integer::intValue).toArray();
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [45 Ⅱ.从上到下打印二叉树 II](https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-ii-lcof/description/)
+
+**题目描述**
+
+从上到下打印出二叉树的每一层节点，同一层节点从左至右打印。
+
+示例 1：
+
+* 输入: [3,9,20,null,null,15,7]
+
+* 输出: [[3],[9,20],[15,7]]
+
+**解题思路**
+
+**BFS**  使用队列进行层次遍历，每次遍历一层，然后将每一层的节点加入到数组
+
+```Java
+class Solution {
+
+    public List<List<Integer>> decorateRecord(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        Queue<TreeNode> q = new LinkedList<>();
+        if(root!=null) q.add(root);
+        while(!q.isEmpty())
+        {
+            List<Integer> tmp = new ArrayList<>();
+            for(int i= q.size();i>0;i--)
+            {
+                TreeNode u = q.poll();
+                tmp.add(u.val);
+                if(u.left!=null) q.add(u.left);
+                if(u.right!=null) q.add(u.right);
+            }
+            res.add(tmp);
+        }
+        return res;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+## [46 从上到下打印二叉树 III](https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-iii-lcof/description/)
+
+**题目描述**
+
+请实现一个函数按照之字形顺序打印二叉树，即第一行按照从左到右的顺序打印，第二层按照从右到左的顺序打印，第三行再按照从左到右的顺序打印，其他行以此类推。
+
+示例 1：
+
+* 输入: [3,9,20,null,null,15,7]
+
+* 输出: [[3],[20,9],[15,7]]
+
+**解题思路**
+
+**BFS**  使用队列进行层次遍历，每次遍历一层，然后将每一层的节点加入到数组，奇数层逆序
+
+```Java
+class Solution {
+    public List<List<Integer>> decorateRecord(TreeNode root) {
+        Queue<TreeNode> queue = new LinkedList<>();
+        List<List<Integer>> res = new ArrayList<>();
+        if(root != null) queue.add(root);
+        while(!queue.isEmpty()) {
+            LinkedList<Integer> tmp = new LinkedList<>();
+            for(int i = queue.size(); i > 0; i--) {
+                TreeNode node = queue.poll();
+                if(res.size() % 2 == 0) tmp.addLast(node.val); // 偶数层 -> 队列头部
+                else tmp.addFirst(node.val); // 奇数层 -> 队列尾部
+                if(node.left != null) queue.add(node.left);
+                if(node.right != null) queue.add(node.right);
+            }
+            res.add(tmp);
+        }
+        return res;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [47 二叉搜索树的后续遍历序列](https://leetcode.cn/problems/er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof/)
+
+**题目描述**
+
+输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历结果。如果是则返回 true，否则返回 false。假设输入的数组的任意两个数字都互不相同。
+
+示例 1：
+
+* 输入: [1,6,3,2,5]
+
+* 输出: false
+
+**解题思路**
+
+**递归**  递归判断左右子树是否满足二叉搜索树的性质
+
+```Java
+class Solution {
+    public boolean verifyTreeOrder(int[] postorder) {
+        return dfs(postorder,0,postorder.length-1);
+    }
+    public boolean dfs(int postorder[],int l,int r)
+    {
+        if(l>=r) return true;
+        int k = l;
+        // 找到从左到右第一个大于根节点的点，即为左右子树的分界点
+        while(postorder[k]<postorder[r]) k++;
+        int m = k;
+        while(postorder[m]>postorder[r]) m++;
+        //如果当前根节点的左右子树符合情况，则继续递归其左右子树看是否符合
+        return m==r&&dfs(postorder,l,k-1)&&dfs(postorder,k,r-1);
+    }
+}
+```
+
+**时间复杂度 O(N^2)** 
+
+每次调用 dfs(i,j) 减去一个根节点，因此递归占用 O(N) ；最差情况下（即当树退化为链表），每轮递归都需遍历树所有节点，占用 O(N) 。因此总时间复杂度为 O(N^2) 。
+
+**空间复杂度 O(N)**
+
+**单调栈**  使用单调栈，树后续遍历的倒序为根节点，右子树，左子树
+![](https://cdn.jsdelivr.net/gh/luckygalaxy666/img_bed@main/img/202412192222790.png)
+
+![](https://cdn.jsdelivr.net/gh/luckygalaxy666/img_bed@main/img/202412192222559.png)
+```Java
+class Solution {
+    public boolean verifyTreeOrder(int[] postorder) {
+        int root = Integer.MAX_VALUE;
+        Stack<Integer> stk = new Stack<>();
+        for(int i = postorder.length-1;i>=0;i--)
+        {
+            if(postorder[i]>=root) return false;
+            while(!stk.isEmpty() && stk.peek()> postorder[i]) root =stk.pop();
+            stk.push(postorder[i]);
+        }
+        return true;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [48 二叉树中和为某一值的路径](https://leetcode.cn/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/)
+
+**题目描述**
+
+输入一棵二叉树和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。
+
+示例 1：
+
+* 输入: [5,4,8,11,null,13,4,7,2,null,null,5,1], 22
+
+* 输出: [[5,4,11,2],[5,8,4,5]]
+
+**解题思路**
+
+**DFS**  递归遍历二叉树，每次递归将当前节点加入到路径中，然后判断是否满足条件
+
+```Java
+class Solution {
+    List<List<Integer>> res = new ArrayList<>();
+    List<Integer> tmp = new ArrayList<>();
+    int target;
+    public List<List<Integer>> pathTarget(TreeNode root, int target) {
+        this.target = target;
+        dfs(root,0);
+        return res;
+    }
+    public void dfs(TreeNode root, int cnt)
+    {
+        if(root==null) return;
+        
+        tmp.add(root.val);
+        cnt+= root.val;
+        // 如果直接res.add(tmp),后续tmp改变时,res中的tmp也会随之改变
+        if(cnt == target && root.left ==null &&root.right == null)
+            res.add(new LinkedList(tmp));
+            
+        dfs(root.left,cnt);
+        dfs(root.right,cnt);
+        tmp.removeLast();
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
 
