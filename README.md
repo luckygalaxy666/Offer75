@@ -51,6 +51,13 @@
 * [46 从上到下打印二叉树 III](#46-从上到下打印二叉树-iii)
 * [47 二叉搜索树的后续遍历序列](#47-二叉搜索树的后续遍历序列)
 * [48 二叉树中和为某一值的路径](#48-二叉树中和为某一值的路径)
+* [49 二叉搜索树与双向链表](#49-二叉搜索树与双向链表)
+* [50 序列化二叉树](#50-序列化二叉树)
+* [51 二叉搜索树的第k大节点](#51-二叉搜索树的第k大节点)
+* [52 二叉树的深度](#52-二叉树的深度)
+* [53 平衡二叉树](#53-平衡二叉树)
+* [54二叉搜索树的最近公共祖先](#54二叉搜索树的最近公共祖先)
+* [55 二叉树的最近公共祖先](#55-二叉树的最近公共祖先)
 
 <!-- vim-markdown-toc -->
 
@@ -2177,4 +2184,345 @@ class Solution {
 
 **时间复杂度 O(N)**
 **空间复杂度 O(N)**
+
+
+## [49 二叉搜索树与双向链表](https://leetcode.cn/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/)
+
+**题目描述**
+
+输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的循环双向链表。要求不能创建任何新的节点，只能调整树中节点指针的指向。
+
+示例 1：
+
+* 输入: [4,2,5,1,3]
+
+* 输出: [1,2,3,4,5]
+
+**解题思路**
+
+**中序遍历**  二叉搜索树的中序遍历即为排序的链表，然后将链表的头尾相连
+
+```Java
+class Solution {
+    Node head,pre;
+    public Node treeToDoublyList(Node root) {
+        if(root == null) return root;
+        dfs(root);
+        pre.right = head;
+        head.left = pre;
+        return head;
+    }
+    public void dfs(Node root)
+    {
+        if(root ==null ) return;
+        dfs(root.left);
+        if(pre == null)
+        {
+            pre = root;
+            head = root;
+        }
+        else
+        {
+            pre.right = root;
+            root.left = pre;
+            pre = root;
+        }
+        dfs(root.right);
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [50 序列化二叉树](https://leetcode.cn/problems/xu-lie-hua-er-cha-shu-lcof/solutions/)
+
+**题目描述**
+
+请实现两个函数，分别用来序列化和反序列化二叉树。
+
+示例 1：
+
+* 输入: [1,2,3,null,null,4,5]
+
+* 输出: [1,2,3,null,null,4,5]
+
+**解题思路**
+
+**BFS**  使用队列进行层次遍历，序列化时将null节点也加入到数组，反序列化时，每次取出两个节点，一个为左节点，一个为右节点
+
+```Java
+public class Codec {
+    List<Integer> res = new ArrayList<>();
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        if(root == null) return "[]" ;
+        StringBuilder res = new StringBuilder("[");
+        Queue<TreeNode> queue  = new LinkedList<>();
+        queue.offer(root);
+        while(!queue.isEmpty())
+        {
+            TreeNode u = queue.poll();
+            if(u!=null) 
+            {
+                res.append(u.val+",");
+                queue.add(u.left);
+                queue.add(u.right);
+
+            }
+            else
+                res.append("null,");
+
+        }
+        // 去除最后多余的逗号
+        res.deleteCharAt(res.length()-1);
+        res.append("]");
+        // System.out.println(res);
+        return res.toString();
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if(data.equals("[]")) return null;
+        String[] val = data.substring(1,data.length()-1).split(",");
+        TreeNode root = new TreeNode(Integer.parseInt(val[0]));
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        int i  =1 ;
+        while(!queue.isEmpty())
+        {
+            TreeNode u = queue.poll();
+            if(!val[i].equals("null"))
+            {
+                u.left = new TreeNode(Integer.parseInt(val[i]));
+                queue.add(u.left);
+            }
+            i++;
+            if(!val[i].equals("null"))
+            {
+                u.right =new TreeNode(Integer.parseInt(val[i]));
+                queue.add(u.right);
+            }
+            i++;
+        }
+        return root;
+        
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+
+## [51 二叉搜索树的第k大节点](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof/)
+
+**题目描述**
+
+给定一棵二叉搜索树，请找出其中第k大的节点。
+
+示例 1：
+
+* 输入: root = [3,1,4,null,2], k = 1
+
+* 输出: 4
+
+**解题思路**
+
+**中序遍历**  二叉搜索树的中序遍历即为排序的链表，然后找到第k大的节点
+
+```Java
+class Solution {
+
+    int k = 0;
+    int cnt;
+    int res;
+    public int findTargetNode(TreeNode root, int cnt) {
+        this.cnt = cnt;
+        dfs(root);
+        return res;
+    }
+    void dfs(TreeNode root)
+    {
+        if(root == null) return ;
+        dfs(root.right);
+        k+=1;
+        if(k == cnt) 
+        {
+            res = root.val; 
+            return;
+            }
+        dfs(root.left);
+    }
+
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [52 二叉树的深度](https://leetcode-cn.com/problems/er-cha-shu-de-shen-du-lcof/)
+
+**题目描述**
+
+输入一棵二叉树，求该树的深度。
+
+示例 1：
+
+* 输入: [3,9,20,null,null,15,7]
+
+* 输出: 3
+
+**解题思路**
+
+**递归**  递归求左右子树的深度，然后取最大值
+
+```Java
+class Solution {
+    int res;
+    public int calculateDepth(TreeNode root) {
+        dfs(root,0);
+        return res;
+    }
+    public void dfs(TreeNode root,int depth)
+    {
+        if(root == null)
+        {
+            res = Math.max(res,depth);
+            return;
+        }
+        dfs(root.left,depth+1);
+        dfs(root.right,depth+1);
+        return ;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [53 平衡二叉树](https://leetcode-cn.com/problems/ping-heng-er-cha-shu-lcof/)
+
+**题目描述**
+
+输入一棵二叉树的根节点，判断该树是不是平衡二叉树。
+
+示例 1：
+
+* 输入: [3,9,20,null,null,15,7]
+
+* 输出: true
+
+**解题思路**
+
+**递归**  递归求左右子树的深度，然后判断左右子树的深度差是否小于等于1
+
+```Java
+class Solution {
+    boolean flag = true;
+    public boolean isBalanced(TreeNode root) {
+        dfs(root);
+        return flag;
+    }
+    public int dfs(TreeNode root)
+    {
+
+        if(root == null||flag == false)
+        {
+            return 1;
+        }
+        int l_d =dfs(root.left) ;
+        int r_d =dfs(root.right);
+        if (Math.abs(l_d-r_d)>1) {
+            flag =false; 
+            return -1;
+        }
+        return Math.max(l_d,r_d)+ 1;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [54二叉搜索树的最近公共祖先](https://leetcode.cn/problems/er-cha-sou-suo-shu-de-zui-jin-gong-gong-zu-xian-lcof/description/)
+
+**题目描述**
+
+给定一个二叉搜索树, 找到该树中两个指定节点的最近公共祖先。
+
+示例 1：
+
+* 输入: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8
+
+* 输出: 6
+
+**解题思路**
+
+**递归** 由于是二叉搜索树，所以可以根据大小关系判断最近公共祖先
+
+```Java
+class Solution {
+    int valp,valq;
+    TreeNode res;
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        this.valp = Math.min(p.val,q.val);
+        this.valq = Math.max(p.val,q.val);
+        dfs(root);
+        return res;
+    }
+    public void dfs(TreeNode root)
+    {
+        if(root == null) return ;
+        if(root.val>=valp && root.val <=valq)
+        {
+             res = root;
+             return;
+        }
+        if(root.val < valp) dfs(root.right);
+        dfs(root.left);
+        return;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [55 二叉树的最近公共祖先](https://leetcode.cn/problems/er-cha-shu-de-zui-jin-gong-gong-zu-xian-lcof/description/)
+
+**题目描述**
+
+给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+
+示例 1：
+
+* 输入: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+
+* 输出: 3
+
+**解题思路**
+
+**递归**  递归判断左右子树是否包含p或q，如果左右子树都包含，则当前节点为最近公共祖先
+
+```Java
+class Solution {
+    int target,valp,valq;
+    TreeNode res;
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+    if(root == null || root == p || root == q) return root;
+    TreeNode left = lowestCommonAncestor(root.left,p,q);
+    TreeNode right = lowestCommonAncestor(root.right,p,q);
+    // 左边没有出现过p和q 说明答案在右子树上
+    // 左右都有 说明答案是根节点
+    if(left == null) return right;
+    if(right == null) return left;
+    return root;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
 
