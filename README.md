@@ -58,6 +58,11 @@
 * [53 平衡二叉树](#53-平衡二叉树)
 * [54二叉搜索树的最近公共祖先](#54二叉搜索树的最近公共祖先)
 * [55 二叉树的最近公共祖先](#55-二叉树的最近公共祖先)
+* [56 二进制中1的个数](#56-二进制中1的个数)
+* [57 数值的整数次方](#57-数值的整数次方)
+* [58 Ⅰ.数组中数字出现的次数](#58-数组中数字出现的次数)
+* [59 Ⅱ.数组中数字出现的次数](#59-数组中数字出现的次数)
+* [60 不用加减乘除做加法](#60-不用加减乘除做加法)
 
 <!-- vim-markdown-toc -->
 
@@ -2525,4 +2530,210 @@ class Solution {
 **时间复杂度 O(N)**
 **空间复杂度 O(N)**
 
+## [56 二进制中1的个数](https://leetcode.cn/problems/er-jin-zhi-zhong-1de-ge-shu-lcof/description/)
+**题目描述**
+
+请实现一个函数，输入一个整数，输出该数二进制表示中 1 的个数。例如，把 9 表示成二进制是 1001，有 2 位是 1。因此，如果输入 9，则该函数输出 2。
+
+示例 1：
+
+* 输入: 00000000000000000000000000001011
+
+* 输出: 3
+
+**解题思路**
+
+**逐位判断**
+```Java
+public class Solution {
+    // you need to treat n as an unsigned value
+    public int hammingWeight(int n) {
+        int res = 0;
+        while(n!=0)
+        {
+            res += n&1;
+            n>>>=1;
+        }
+        return res;
+    }
+}
+```
+
+**时间复杂度 O(logN)**
+**空间复杂度 O(1)**
+
+
+**位运算**  使用n&(n-1)可以消除n的最后一个1
+
+```Java
+public class Solution {
+    // you need to treat n as an unsigned value
+    public int hammingWeight(int n) {
+        int res = 0;
+        while(n!=0)
+        {
+            res++;
+            n&=n-1;
+        }
+        return res;
+    }
+}
+```
+
+** 时间复杂度 O(M) M为1的个数**
+** 空间复杂度 O(1)**
+
+## [57 数值的整数次方](https://leetcode-cn.com/problems/shu-zhi-de-zheng-shu-ci-fang-lcof/description/)
+
+**题目描述**
+
+实现函数 double Power(double base, int exponent)，求 base 的 exponent 次方。
+
+不得使用库函数，同时不需要考虑大数问题。
+
+示例 1：
+
+* 输入: 2.00000, 10
+
+* 输出: 1024.00000
+
+**解题思路**
+
+**快速幂**  
+
+```Java
+class Solution {
+    public double myPow(double x, int n) {
+        double res = 1;
+        if(x == 1|| x== 0) return x;
+        long b = n; // 防止越界
+        if(b<0) x = 1/x;
+        b = Math.abs(b);
+        while(b!=0)
+        {
+            if((b&1) == 1) res *=x;
+            x*=x;
+            b>>=1;
+        }
+        return res;
+    }
+}
+```
+
+**时间复杂度 O(logN)**
+**空间复杂度 O(1)**
+
+## [58 Ⅰ.数组中数字出现的次数](https://leetcode.cn/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/description/)
+
+**题目描述**
+
+一个整型数组 nums 里除两个数字之外，其他数字都出现了两次。请写程序找出这两个只出现一次的数字。要求时间复杂度是 O(n)，空间复杂度是 O(1)。
+
+示例 1：
+
+* 输入: [4,1,4,6]
+
+* 输出: [1,6] 或 [6,1]
+
+**解题思路**
+
+**位运算**  使用异或运算，找到两个不同的数的异或结果，然后根据异或结果的最低位1将数组分为两部分，分别异或
+
+```Java
+class Solution {
+    public int[] sockCollocation(int[] sockets) {
+        int len = sockets.length;
+        int x = 0,y = 0  ,n = 0 ;
+        for(int i = 0;i<len;i++) n^=sockets[i];
+
+        // 找到n的二进制表示从右到左中第一个1所构成的数，以这个数将数组二分。
+        int m = 1;
+        while((n&m) == 0) m<<=1;
+
+        for(int i =0;i<len;i++) 
+        {
+            if((sockets[i]&m) !=0) x ^= sockets[i];
+            else y^=sockets[i];
+        }
+        return new int[]{x,y};
+
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(1)**
+
+## [59 Ⅱ.数组中数字出现的次数](https://leetcode.cn/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-ii-lcof/description/)
+
+**题目描述**
+
+在一个数组 nums 中除一个数字只出现一次之外，其他数字都出现了三次。请找出那个只出现一次的数字。
+
+示例 1：
+
+* 输入: [3,4,3,3]
+
+* 输出: 4
+
+**解题思路**
+
+**位运算**  使用位运算，统计每一位1的个数，然后对3取余
+
+```Java
+class Solution {
+    public int trainingPlan(int[] actions) {
+        int[] cnt = new int[32];
+        int res =0;
+        for(int action :actions)
+        {
+            for(int i = 0;i<32;i++)
+            {
+                cnt[i] += action & 1;
+                action >>=1;
+            }
+        }
+        
+        for(int i =0;i<32;i++)
+        {
+            cnt[i] %=3;
+            if(cnt[i] == 1)  res += 1<<i;
+        }
+        return res ;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(1)**
+
+## [60 不用加减乘除做加法](https://leetcode.cn/problems/bu-yong-jia-jian-cheng-chu-zuo-jia-fa-lcof/)
+**题目描述**
+
+写一个函数，求两个整数之和，要求在函数体内不得使用 “+”、“-”、“*”、“/” 四则运算符号。
+
+示例 1：
+
+* 输入: a = 1, b = 1
+
+* 输出: 2
+
+**解题思路**
+
+**位运算**  使用异或运算求和，使用与运算求进位，然后将进位左移一位，直到进位为0
+
+```Java
+class Solution {
+    public int encryptionCalculate(int dataA, int dataB) {
+        
+        while(dataB !=0)
+        {
+            int c = (dataA & dataB) <<1; // 进位数
+            dataA^=dataB ; // 非进位数
+            dataB = c;
+        }
+         return dataA;
+    }
+}
+```
 
