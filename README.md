@@ -63,6 +63,20 @@
 * [58 Ⅰ.数组中数字出现的次数](#58-数组中数字出现的次数)
 * [59 Ⅱ.数组中数字出现的次数](#59-数组中数字出现的次数)
 * [60 不用加减乘除做加法](#60-不用加减乘除做加法)
+* [61 斐波那契数列](#61-斐波那契数列)
+* [62 青蛙跳台阶问题](#62-青蛙跳台阶问题)
+* [63 正则表达式匹配](#63-正则表达式匹配)
+* [64 连续子数组的最大和](#64-连续子数组的最大和)
+* [65 把数字翻译成字符串](#65-把数字翻译成字符串)
+* [66 礼物的最大价值](#66-礼物的最大价值)
+* [67 n个骰子的点数](#67-n个骰子的点数)
+* [68 圆圈中最后剩下的数字](#68-圆圈中最后剩下的数字)
+* [69 矩阵中的路径](#69-矩阵中的路径)
+* [70 机器人的运动范围](#70-机器人的运动范围)
+* [71 顺时针打印矩阵](#71-顺时针打印矩阵)
+* [72 股票中的最大利润](#72-股票中的最大利润)
+* [73 1~n整数中1出现的次数](#73-1n整数中1出现的次数)
+* [74 数字序列中某一位的数字](#74-数字序列中某一位的数字)
 
 <!-- vim-markdown-toc -->
 
@@ -2736,4 +2750,741 @@ class Solution {
     }
 }
 ```
+
+**时间复杂度 O(1)**
+**空间复杂度 O(1)**
+
+## [61 斐波那契数列](https://leetcode.cn/problems/fei-bo-na-qi-shu-lie-lcof/description/)
+
+**题目描述**
+
+写一个函数，输入 n ，求斐波那契（Fibonacci）数列的第 n 项（即 F(N)）。斐波那契数列的定义如下：
+
+F(0) = 0,   F(1) = 1
+
+F(N) = F(N - 1) + F(N - 2), 其中 N > 1.
+
+示例 1：
+
+* 输入: 2
+
+* 输出: 1
+
+**解题思路**
+
+**动态规划**  使用动态规划，递推求解
+
+```Java
+class Solution {
+    public int fib(int n) {
+        if(n == 0) return 0;
+        int mod = (int) 1e9+7;
+        int[] f = new int[n+1];
+        f[0] = 0;
+        f[1] =1;
+        for(int i = 2;i<=n;i++) f[i] = (f[i-1] + f[i-2]) % mod;
+        return f[n];
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [62 青蛙跳台阶问题](https://leetcode-cn.com/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/description/)
+
+**题目描述**
+
+一只青蛙一次可以跳上 1 级台阶，也可以跳上 2 级台阶。求该青蛙跳上一个 n 级的台阶总共有多少种跳法。
+
+示例 1：
+
+* 输入: 2
+
+* 输出: 2
+
+**解题思路**
+
+**动态规划**  使用动态规划，递推求解
+
+```Java
+class Solution {
+    public int trainWays(int num) {
+        // f[i] = (f[i-1] + f[i-2]) %mod
+        if(num == 0) return 1;
+        int[] f = new int[num+1];
+        f[0] = 1;
+        f[1] = 1;
+        int mod = (int) 1e9+7;
+        for(int i = 2;i<=num;i++) f[i] =(f[i-1] + f[i-2]) % mod;
+        return f[num];
+        
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [63 正则表达式匹配](https://leetcode.cn/problems/zheng-ze-biao-da-shi-pi-pei-lcof/description/)
+
+**题目描述**
+
+请实现一个函数用来匹配包括 '.' 和 '*' 的正则表达式。模式中的字符 '.' 表示任意一个字符，而 '*' 表示它前面的字符可以出现任意次（包含 0 次）。
+
+在本题中，匹配是指字符串的所有字符匹配整个模式。例如，字符串 "aaa" 与模式 "a.a" 和 "ab*ac*a" 匹配，但与 "aa.a" 和 "ab*a" 均不匹配。
+
+示例 1：
+
+* 输入: s = "aa" p = "a"
+
+* 输出: false
+
+**解题思路**
+
+**动态规划**  使用动态规划，dp[i][j]表示s的前i个字符和p的前j个字符是否匹配
+
+
+```Java
+class Solution {
+    public boolean articleMatch(String s, String p) {
+        char[] s1 = s.toCharArray();
+        char[] p1 = p.toCharArray();
+        int lens = s1.length;
+        int lenp = p1.length;
+
+        // 动态规划数组
+        boolean[][] dp = new boolean[lens + 1][lenp + 1];
+        dp[0][0] = true;
+
+        // 初始化空字符串匹配模式
+        for (int j = 2; j <= lenp; j += 2) {
+            if (p1[j - 1] == '*') {
+                dp[0][j] = dp[0][j-2]；
+            }
+        }
+
+        // 动态规划填表
+        for (int i = 1; i <= lens; i++) {
+            for (int j = 1; j <= lenp; j++) {
+                if (p1[j - 1] == '*') {
+                    // 匹配零次或多次
+                    if (p1[j - 2] == s1[i - 1] || p1[j - 2] == '.') {
+                        dp[i][j] = dp[i][j - 2] || dp[i - 1][j];
+                    } else {
+                        dp[i][j] = dp[i][j - 2];
+                    }
+                } else if (p1[j - 1] == s1[i - 1] || p1[j - 1] == '.') {
+                    // 单字符匹配
+                    dp[i][j] = dp[i - 1][j - 1];
+                }
+            }
+        }
+
+        return dp[lens][lenp];
+    }
+}
+```
+
+**时间复杂度 O(NM)**
+**空间复杂度 O(NM)**
+
+## [64 连续子数组的最大和](https://leetcode.cn/problems/lian-xu-zi-shu-zu-de-zui-da-he-lcof/description/)
+
+**题目描述**
+
+输入一个整型数组，数组中的一个或连续多个整数组成一个子数组。求所有子数组的和的最大值。
+
+要求时间复杂度为 O(n)。
+
+示例 1：
+
+* 输入: nums = [-2,1,-3,4,-1,2,1,-5,4]
+
+* 输出: 6
+
+**解题思路**
+
+**动态规划**  使用动态规划，dp[i]表示以i结尾的最大子数组和
+
+```Java
+class Solution {
+    public int maxSales(int[] sales) {
+        int len = sales.length;
+        if(len == 0) return 0;
+        int[] dp = new int[len];
+        // dp[i] 以第i个数为结尾的子数组求和 的最大值
+        
+        dp[0] = sales[0];
+        int res =dp[0];
+        for(int i=1;i<len;i++)
+        {
+            dp[i] = Math.max(dp[i-1] + sales[i],sales[i]);
+            res = Math.max(res,dp[i]);
+        }
+        return res;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [65 把数字翻译成字符串](https://leetcode.cn/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/description/)
+
+**题目描述**
+
+给定一个数字，我们按照如下规则把它翻译为字符串：
+
+0 翻译成 “a” ，1 翻译成 “b”，……，11 翻译成 “l”，……，25 翻译成 “z”。
+
+一个数字可能有多个翻译。请编程实现一个函数，用来计算一个数字有多少种不同的翻译方法。
+
+示例 1：
+
+* 输入: 12258
+
+* 输出: 5
+
+**解题思路**
+
+**动态规划**  使用动态规划，dp[i]表示以i结尾的最大子数组和
+![](https://cdn.jsdelivr.net/gh/luckygalaxy666/img_bed@main/img/202412242126860.png)
+
+```Java
+class Solution {
+    public int crackNumber(int ciphertext) {
+        if(ciphertext<10) return 1;
+        List<Integer> list = new ArrayList<>();
+        int len = 0;
+        // 注意 倒序进组
+        while(ciphertext!=0)
+        {
+            list.add(ciphertext%10);
+            ciphertext/=10;
+            len++;
+        }
+
+        int[] dp  = new int[len];
+        dp[0] =1;
+        dp[1] =1;
+        for(int i =1;i<len;i++)
+        {
+            int val = list.get(i-1) + list.get(i)*10;
+            if(val <26 &&  val >=10) 
+                dp[i] =  (i== 1? 1: dp[i-2]) + dp[i-1];
+            else dp[i] = dp[i-1];
+        }
+        
+        return dp[len-1];
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(N)**
+
+## [66 礼物的最大价值](https://leetcode-cn.com/problems/li-wu-de-zui-da-jie-zhi-lcof/description/)
+
+**题目描述**
+
+在一个 m*n 的棋盘的每一个格都放有一个礼物，每个礼物都有一定的价值（大于 0）。
+
+你可以从棋盘的左上角开始拿格子里的礼物，并每次向右或者向下移动一格，直到到达棋盘的右下角。
+
+给定一个棋盘，求拿到礼物的最大价值。
+
+示例 1：
+
+* 输入: 
+[
+     [1,3,1],
+     [1,5,1],
+     [4,2,1]
+            ]
+
+* 输出: 12
+
+**解题思路**
+
+**动态规划**  使用动态规划，dp[i][j]表示到达i,j的最大价值
+
+```Java
+class Solution {
+    public int jewelleryValue(int[][] frame) {
+        int n = frame.length;
+        int m = frame[0].length;
+
+        int[] dp = new int[m+1];
+        for(int i =1;i<=n;i++)
+            for(int j =1;j<=m;j++)
+                dp[j] = Math.max(dp[j],dp[j-1]) + frame[i-1][j-1];
+        
+        return dp[m];
+    }
+}
+```
+
+**时间复杂度 O(NM)**
+**空间复杂度 O(M)**
+
+## [67 n个骰子的点数](https://leetcode-cn.com/problems/nge-tou-zi-de-dian-shu-lcof/description/)
+
+**题目描述**
+
+把 n 个骰子扔在地上，所有骰子朝上一面的点数之和为 s。输入 n，打印出 s 的所有可能的值出现的概率。
+
+示例 1：
+
+* 输入: 2
+
+* 输出: [0.02778,0.05556,0.08333,0.11111,0.13889,0.16667,0.13889,0.11111,0.08333,0.05556,0.02778]
+
+**解题思路**
+
+**动态规划** dp[j]表示和为j的概率，dp[j] = dp[j-1] + dp[j-2] + dp[j-3] + dp[j-4] + dp[j-5] + dp[j-6]
+迭代n次
+
+```Java
+class Solution {
+    public double[] statisticsProbability(int num) {
+        double[] res = new double[num * 5 + 1]; // 结果数组，存储从 num 到 6*num 的概率
+        double[] dp = new double[num * 6 + 1]; // 动态规划数组，存储当前状态
+
+        // 初始化第一个骰子
+        for (int i = 1; i <= 6; i++) {
+            dp[i] = 1.0 / 6;
+        }
+
+        // 动态规划更新
+        for (int i = 2; i <= num; i++) {
+            for (int j = i * 6; j >= i; j--) {
+                dp[j] = 0; // 清零，避免污染
+                for (int k = 1; k <= 6; k++) {
+                    if (j - k >= i - 1) { // 判断是否越界并满足骰子个数条件
+                        dp[j] += dp[j - k] / 6.0;
+                    }
+                }
+            }
+        }
+
+        // 填充结果数组
+        for (int i = 0; i <= 5 * num; i++) {
+            res[i] = dp[num + i];
+        }
+
+        return res;
+    }
+}
+
+```
+
+**时间复杂度 O(NM)**
+**空间复杂度 O(M)**
+
+## [68 圆圈中最后剩下的数字](https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/description/)
+
+**题目描述**
+
+0,1,...,n-1 这 n 个数字排成一个圆圈，从数字 0 开始，每次从这个圆圈里删除第 m 个数字。求出这个圆圈里剩下的最后一个数字。
+
+示例 1：
+
+* 输入: n = 5, m = 3
+
+* 输出: 3
+
+**解题思路**
+
+**动态规划** f(n,m) = (f(n-1,m) + m) % n
+
+```Java
+class Solution {
+    public int iceBreakingGame(int num, int target) {
+        // f[n] = (f[n-1] +m) % n;
+        // f[1] = 0;
+        int x =0;
+        for(int i = 2;i<=num;i++)
+            x = (x + target) %i;
+        return x;
+    }
+}
+```
+
+**时间复杂度 O(N)**
+
+**空间复杂度 O(1)**
+
+## [69 矩阵中的路径](https://leetcode.cn/problems/ju-zhen-zhong-de-lu-jing-lcof/description/)
+
+**题目描述**
+
+请设计一个函数，用来判断在一个矩阵中是否存在一条包含某字符串所有字符的路径。路径可以从矩阵中的任意一个格子开始，每一步可以在矩阵中向左、右、上、下移动一个格子。如果一条路径经过了矩阵中的某一个格子，则该路径不能再进入该格子。
+
+示例 1：
+
+* 输入: 
+[
+  ['A','B','C','E'],
+  ['S','F','C','S'],
+  ['A','D','E','E']
+]
+
+* 输出: "ABCCED"
+
+**解题思路**
+
+**DFS**  递归遍历矩阵，判断是否满足条件
+
+```Java
+class Solution {
+    char[] str;
+    char[][] g;
+    int len;
+    int lenr,lenc;
+    int[] dx = {-1,0,1,0};
+    int[] dy = {0,-1,0,1};
+    public boolean wordPuzzle(char[][] grid, String target) {
+        str  = target.toCharArray();
+        g = grid;
+        len = str.length;
+        lenr = grid.length;
+        lenc = grid[0].length;
+
+        for(int i = 0;i<lenr;i++)
+            for(int j = 0;j<lenc;j++)
+                if(dfs(i,j,0))  return true;
+        
+        return false;
+    }
+    public boolean dfs(int row,int col,int cnt)
+    {
+        if(row == lenr || col == lenc || row<0 || col<0 || g[row][col]!=str[cnt]) return false;
+        if(cnt == len-1) return true;
+        boolean res = false;
+      
+        g[row][col] = '\0';
+        
+        for(int i = 0;i<4;i++)
+        {
+            int x = dx[i] + row;
+            int y = dy[i] + col;
+            if(dfs(x ,y, cnt + 1))
+            {
+                g[row][col] = str[cnt];
+                return true;
+            }
+        }
+        g[row][col] = str[cnt];
+        return false;
+    }
+}
+```
+
+**时间复杂度 O(NM)**
+
+**空间复杂度 O(NM)**
+
+## [70 机器人的运动范围](https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof/description/)
+
+**题目描述**
+
+地上有一个 m 行 n 列的方格。一个机器人从坐标 [0, 0] 的格子开始移动，它每次可以向左、右、上、下移动一格，但不能进入行坐标和列坐标的数位之和大于 k 的格子。
+
+例如，当 k 为 18 时，机器人能够进入方格 [35, 37]，因为 3+5+3+7=18。但它不能进入方格 [35, 38]，因为 3+5+3+8=19。请问该机器人能够达到多少个格子？
+
+示例 1：
+
+* 输入: m = 2, n = 3, k = 1
+
+* 输出: 3
+
+**解题思路**
+
+**BFS** 使用队列进行广度优先搜索
+
+```Java
+class Solution {
+
+    public int wardrobeFinishing(int m, int n, int cnt) {
+   
+        boolean[][] st = new boolean[m][n];
+        int[] dx = {0,1};
+        int[] dy = {1,0};
+        Queue<int[]> q = new LinkedList<>();
+        int ans = 1;
+        q.add(new int[]{0,0});
+        while(!q.isEmpty())
+        {   
+            int[] u = q.poll();
+            for(int i = 0;i<2;i++)
+            {
+                int x = u[0] + dx[i];
+                int y = u[1] + dy[i];
+                if(x>=m|| y>=n || digit(x) + digit(y) >cnt|| st[x][y] == true) continue;
+                st[x][y] = true;
+                ans++;
+                q.add(new int[]{x,y});
+            }
+        }
+        return ans;
+    }
+    public int digit(int x)
+    {
+        int res = 0;
+        while(x!=0)
+        {
+            res += x%10;
+            x/=10;
+        }
+        return res;
+    }
+}
+```
+
+**时间复杂度 O(NM)**
+**空间复杂度 O(NM)**
+
+## [71 顺时针打印矩阵](https://leetcode.cn/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/description/)
+
+**题目描述**
+
+输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字。
+
+示例 1：
+
+* 输入: 
+[
+  [1, 2, 3, 4],
+  [5, 6, 7, 8],
+  [9,10,11,12]
+]
+
+* 输出: [1,2,3,4,8,12,11,10,9,5,6,7]
+
+**解题思路**
+
+**模拟**  模拟顺时针打印过程
+
+```Java
+class Solution {
+    public int[] spiralArray(int[][] array) {
+        int m = array.length;
+        int n = 0;
+        if(m == 0){
+            return new int[0];
+        } else {
+            n = array[0].length;
+        }
+        
+        int[] arr = new int [m * n];
+        int count = 0;
+
+        int l = 0;
+        int r = n - 1;
+        int t = 0;
+        int b = m - 1;
+        while (l <= r && t <= b) {
+            for (int i = l; i <= r; i++) {
+                arr[count] = array[t][i];
+                count++;
+            }
+            t++;
+            for (int i = t; i <= b; i++) {
+                arr[count] = array[i][r];
+                count++;
+            }
+            r--;
+
+            if (t <= b) {
+                for (int i = r; i >= l; i--) {
+                    arr[count] = array[b][i] ;
+                    count++;
+                }
+                b--;
+            }
+            if (l <= r) {
+                for (int i = b; i >= t; i--) {
+                    arr[count] = array[i][l];
+                    count++;
+                }
+                l++;
+            }
+        }
+        return arr;
+    }
+}
+```
+
+**时间复杂度 O(NM)**
+**空间复杂度 O(NM)**
+
+## [72 股票中的最大利润](https://leetcode.cn/problems/gu-piao-de-zui-da-li-run-lcof/)
+
+**题目描述**
+
+假设你有一个数组，其中第 i 个元素是股票在第 i 天的价格。
+
+设计一个算法来计算你所能获取的最大利润。你最多可以完成 两笔 交易。
+
+注意: 你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+
+示例 1：
+
+* 输入: [3,3,5,0,0,3,1,4]
+
+* 输出: 6
+
+**解题思路**
+
+**贪心**  使用贪心算法，遍历数组，找到最小值和最大值
+
+```Java
+class Solution {
+    public int bestTiming(int[] prices) {
+        int size = prices.length; 
+        if (size == 0) return 0;
+        int minv = prices[0]; // p[i] 到i为止的最小值
+        int res = 0;
+
+        for(int i =1;i<size;i++)
+        {
+            res = Math.max(res,prices[i]-minv);
+            minv = Math.min(minv,prices[i]);
+        }
+        return res;
+        
+    }
+}
+```
+
+**时间复杂度 O(N)**
+**空间复杂度 O(1)**
+
+## [73 1~n整数中1出现的次数](https://leetcode.cn/problems/1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof/)
+
+**题目描述**
+
+输入一个整数 n ，求1～n这n个整数的十进制表示中1出现的次数。
+
+示例 1：
+
+* 输入: n = 12
+
+* 输出: 5
+
+**解题思路**
+
+**数位dp** dp[i][j]表示前i位数中，最高位为j的数中1的个数
+
+```Java
+class Solution {
+    int num;
+    int[][] p = new int[10][10]; // 第 i 位为 j 时前i位包含 1 的个数
+    int[] power = new int[10];
+
+    public void init() {
+        power[0] = 1;
+        p[0][1] =1;
+        for (int i = 1; i < 10; i++) {
+            power[i] = power[i - 1] * 10;
+            for (int j = 0; j <= 9; j++) {
+                if (j == 1) {
+                    p[i][j] += power[i];
+                }
+                for (int k = 0; k <= 9; k++) {
+                    p[i][j] += p[i - 1][k];
+                }
+            }
+        }
+    }
+
+    public int digitOneInNumber(int num) {
+        this.num = num;
+        init();
+        return dp(num);
+    }
+
+    public int dp(int num) {
+        if (num == 0) return 0;
+        int prime = num;
+        int k =1;
+        int res = 0;
+        List<Integer> q = new ArrayList<>();
+
+        while (num != 0) {
+            int c = prime% k;
+            int n = num %10;
+            q.add(n);
+            num /= 10;
+            k*=10;
+            if(n == 1) res +=c+1; // 将最高位为1的下面的数加上
+        }
+
+        int x = 0;
+
+        for (int i = q.size() - 1; i >= 0; i--) {
+            x = q.get(i);
+            // 累计处理小于当前位的贡献
+            for (int j = 0; j < x; j++) {
+                res += p[i][j];
+            }
+        }
+        return res;
+    }
+}
+```
+
+**时间复杂度 O(logN)**
+**空间复杂度 O(1)**
+
+## [74 数字序列中某一位的数字](https://leetcode.cn/problems/shu-zi-xu-lie-zhong-mou-yi-wei-de-shu-zi-lcof/description/)
+
+**题目描述**
+
+数字以123456789101112131415…的格式序列化到一个字符序列中。在这个序列中，第5位（从下标0开始计数）是5，第13位是1，第19位是4，等等。
+
+请写一个函数，求任意第 n 位对应的数字。
+
+示例 1：
+
+* 输入: 3
+
+* 输出: 3
+
+**解题思路**
+
+**数位dp**  通过数学规律找到对应的数
+
+```Java
+class Solution {
+    public int findKthNumber(int k) {
+        int digit = 1; //位数
+        long p=1; // pow
+        long val = 9*digit *p;
+        // 确定所属数位
+        while(k>val)
+        {
+            k-= val;
+            digit+=1;
+            p*=10;
+            val = 9*digit*p;
+        }
+        // 确定所属数字序号
+        int idx = (k-1)/digit;
+        // 确定所属数字的位数(从高到低)
+        int b =  (k-1)%digit;
+        // System.out.println(b);
+        long num = p+idx;
+        return Long.toString(num).charAt(b) - '0';
+        
+    }
+}
+
+```
+
+**时间复杂度 O(logN)**
+**空间复杂度 O(1)**
+
+
 
